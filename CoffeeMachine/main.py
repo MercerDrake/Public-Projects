@@ -1,26 +1,26 @@
 MENU = {
-    "espresso": {
+    "Espresso": {
         "ingredients": {
             "Water": 50,
             "Coffee": 18,
         },
-        "cost": 1.5,
+        "cost": 1.50,
     },
-    "latte": {
+    "Latte": {
         "ingredients": {
             "Water": 200,
             "Milk": 150,
             "Coffee": 24,
         },
-        "cost": 2.5,
+        "cost": 2.50,
     },
-    "cappuccino": {
+    "Cappuccino": {
         "ingredients": {
             "Water": 250,
             "Milk": 100,
             "Coffee": 24,
         },
-        "cost": 3.0,
+        "cost": 3.00,
     }
 }
 
@@ -28,55 +28,8 @@ resources = {
     "Water": 300,
     "Milk": 200,
     "Coffee": 100,
-    "Money": 0.0
+    "Money": 0
 }
-
-
-def userSelection():
-    selection = input("What would you like? (espresso/latte/cappuccino): ")
-    if selection == "off":
-        return selection
-    elif selection == "report":
-        printReport()
-    else:
-        checkResources(selection)
-
-
-def checkResources(selection):
-
-
-def processCoins():
-    print(f"Please insert coins.")
-    numOfQuarters = input("How many quarters?: ")
-    numOfDimes = input("How many dimes?: ")
-    numOfNickles = input("How many nickles?: ")
-    numOfPennies = input("How many pennies?: ")
-    total = ((int(numOfQuarters) * 0.25) + (int(numOfDimes) * 0.10) +
-             (int(numOfNickles) * 0.05) + (int(numOfPennies) * 0.01))
-    return total
-
-
-def checkTransaction(selection):
-    total = processCoins()
-    if total >= MENU[selection]["cost"]:
-        if total > MENU[selection]["cost"]:
-            change = total - MENU[selection]["cost"]
-            resources["Money"] += MENU[selection]["cost"]
-            print(f"Here is {change} in change")
-            makeCoffee(selection)
-    elif total < MENU[selection]["cost"]:
-        print(f"Sorry, that's not enough money. ${total} refunded.")
-
-
-def makeCoffee(selection):
-    if selection == "espresso":
-        resources["Coffee"] -= MENU[selection]["ingredients"]["Coffee"]
-        resources["Water"] -= MENU[selection]["ingredients"]["Water"]
-    elif selection == "cappuccino" or selection == "latte":
-        resources["Coffee"] -= MENU[selection]["ingredients"]["Coffee"]
-        resources["Water"] -= MENU[selection]["ingredients"]["Water"]
-        resources["Milk"] -= MENU[selection]["ingredients"]["Milk"]
-    print(f"Here is your {selection}. Enjoy!")
 
 
 def printReport():
@@ -89,8 +42,52 @@ def printReport():
             print(f"{key}: ${value}")
 
 
+def checkResources(selection):
+    for key in MENU[selection]["ingredients"].keys():
+        if MENU[selection]["ingredients"][key] <= resources[key]:
+            sufficientIngredients = True
+        else:
+            sufficientIngredients = False
+            print(f"Sorry there isn't enough {key} for that.")
+            return
+    processCoins(selection)
+
+
+def processCoins(selection):
+    print(f"Please input coins.")
+    total = int(input("Number of quarters: ")) * 0.25
+    total += int(input("Number of dimes: ")) * 0.10
+    total += int(input("Number of nickels: ")) * 0.05
+    total += int(input("Number of pennies: ")) * 0.01
+    total = round(total, 2)
+    transactionSuccessful(selection, total)
+
+
+def transactionSuccessful(selection, total):
+    if MENU[selection]["cost"] <= total:
+        change = total - MENU[selection]["cost"]
+        change = round(change, 2)
+        print(f"Here is ${change} in change.")
+        resources["Money"] += MENU[selection]["cost"]
+        makeCoffee(selection)
+    else:
+        print(f"Sorry, that's not enough money. ${total} refunded.")
+
+
+def makeCoffee(selection):
+    for key, value in MENU[selection]["ingredients"].items():
+        resources[key] -= value
+    print(f"Here is your {selection}. Enjoy!")
+
+
 on = True
-while (on == True):
-    selection = userSelection()
-    if selection == "off":
+while on:
+    selection = input("What would you like? (Espresso/Latte/Cappuccino): ")
+    if selection == "Off":
         on = False
+    elif selection == "Espresso" or selection == "Latte" or selection == "Cappuccino":
+        checkResources(selection)
+    elif selection == "Report":
+        printReport()
+    else:
+        print(f"Sorry, that is not a valid selection.")
