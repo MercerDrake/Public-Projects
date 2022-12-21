@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../Private-Projects"
+		},
+		{
+			"name": "Public-Projects",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
